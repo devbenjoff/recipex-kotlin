@@ -1,5 +1,6 @@
 package com.example.recipex.homescreen
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,11 +41,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import com.example.recipex.R.string.*
 import com.example.recipex.appbar.RecipexAppBar
 import com.example.recipex.models.Recipe
 import com.example.recipex.models.Screen
+import com.example.recipex.recipedetail.RecipeDetailScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +73,7 @@ fun HomeScreen(
             ) {
                 AppTextAndDescription()
                 Spacer(modifier = Modifier.height(20.dp))
-                FoodCountriesList()
+                FoodCountriesList(viewModel = homeScreenViewModel)
                 Spacer(modifier = Modifier.height(50.dp))
                 RecipesList(recipes = recipes, navController)
                 Text(text = errorMessage.value)
@@ -79,20 +83,20 @@ fun HomeScreen(
 }
 
 @Composable
-fun FoodCountriesList() {
+fun FoodCountriesList(viewModel: HomeScreenViewModel) {
     val listOfItems = listOf<String>(
-        "Mexican", "Indian", "Bosnian", "American", "Chinese"
+        "Mexican", "Vegetarian", "Dessert", "Vegan", "Sugar"
     )
 
     LazyRow() {
         items(listOfItems.size) { index ->
-            FoodCountryCard(title = listOfItems[index], index)
+            FoodCountryCard(title = listOfItems[index], index, viewModel = viewModel)
         }
     }
 }
 
 @Composable
-fun FoodCountryCard(title: String, index: Int) {
+fun FoodCountryCard(title: String, index: Int, viewModel: HomeScreenViewModel) {
     var selected by rememberSaveable { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -102,6 +106,14 @@ fun FoodCountryCard(title: String, index: Int) {
             indication = null
         ) {
             selected = !selected
+
+            if (selected) {
+                viewModel.setTag(title.lowercase())
+            } else {
+                viewModel.removeTag(title.lowercase())
+            }
+
+            viewModel.loadRandomRecipes()
         }
         .padding(end = 10.dp, start = if (index == 0) 10.dp else 0.dp)
         .border(BorderStroke(0.5.dp, Color(255, 114, 76)), RoundedCornerShape(10.dp)),
@@ -149,14 +161,17 @@ fun RecipesList(recipes: List<Recipe>, navController: NavController) {
             style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White),
         )
         Spacer(modifier = Modifier.height(10.dp))
-
-        LazyRow() {
-            items(recipes.size, key = { index ->
-                recipes[index].id
-            }) { index ->
-                RecipeCard(recipe = recipes[index], navController, index)
-                Spacer(modifier = Modifier.width(30.dp))
+        if (recipes.isNotEmpty()) {
+            LazyRow() {
+                items(recipes.size, key = { index ->
+                    recipes[index].id
+                }) { index ->
+                    RecipeCard(recipe = recipes[index], navController, index)
+                    Spacer(modifier = Modifier.width(30.dp))
+                }
             }
+        } else {
+            Text(text = "No recipes for selected tags")
         }
     }
 

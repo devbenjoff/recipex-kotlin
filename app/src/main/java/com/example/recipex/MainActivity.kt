@@ -44,26 +44,32 @@ class MainActivity : ComponentActivity() {
         setContent {
             RecipexTheme {
                 val navController = rememberNavController()
+                val currentRoute = navController.currentBackStackEntry?.destination?.route
                 Scaffold(
                     bottomBar = {
-                        NavigationBar {
-                            val navBackStackEntry by navController.currentBackStackEntryAsState()
-                            val currentDestination = navBackStackEntry?.destination
-                            items.forEach { screen ->
-                                BottomNavigationItem(
-                                    icon = { Icon(screen.icon!!, contentDescription = null) },
-                                    label = { Text(stringResource(screen.resourceId)) },
-                                    selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                                    onClick = {
-                                        navController.navigate(screen.route) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
+                        if (currentRoute?.contains(Screen.RecipeDetails.route) != null && currentRoute.contains(
+                                Screen.RecipeDetails.route
+                            )
+                        ) {
+                            NavigationBar {
+                                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                                val currentDestination = navBackStackEntry?.destination
+                                items.forEach { screen ->
+                                    BottomNavigationItem(
+                                        icon = { Icon(screen.icon!!, contentDescription = null) },
+                                        label = { Text(stringResource(screen.resourceId)) },
+                                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                                        onClick = {
+                                            navController.navigate(screen.route) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
                                             }
-                                            launchSingleTop = true
-                                            restoreState = true
                                         }
-                                    }
-                                )
+                                    )
+                                }
                             }
                         }
                     }
@@ -82,9 +88,9 @@ class MainActivity : ComponentActivity() {
                                     type = NavType.StringType
                                 }
                             ),
-                        ) {navBackStackEntry ->
+                        ) { navBackStackEntry ->
                             val id = navBackStackEntry.arguments?.getString("recipeId")
-                            RecipeDetailScreen(recipeId = id ?: "")
+                            RecipeDetailScreen(recipeId = id ?: "", navController = navController)
                         }
                     }
                 }

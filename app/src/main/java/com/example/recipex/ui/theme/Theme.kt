@@ -14,7 +14,21 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.core.view.WindowCompat
+import com.example.recipex.R
+
+val playfairFontFamily = FontFamily(
+    Font(R.font.playfair_display_regular, FontWeight.Light),
+    Font(R.font.playfair_display_regular, FontWeight.Normal),
+    Font(R.font.playfair_display_italic, FontWeight.Normal, FontStyle.Italic),
+    Font(R.font.playfair_display_medium, FontWeight.Medium),
+    Font(R.font.playfair_display_semibold, FontWeight.SemiBold),
+    Font(R.font.playfair_display_bold, FontWeight.Bold)
+)
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,

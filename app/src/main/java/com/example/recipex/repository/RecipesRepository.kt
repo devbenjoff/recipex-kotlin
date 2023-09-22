@@ -13,9 +13,9 @@ class RecipesRepository @Inject constructor(
     private val api: RecipesApi
 ) {
 
-    suspend fun getRandomRecipes(): Resource<RecipesResponse> {
+    suspend fun getRandomRecipes(tags: String): Resource<RecipesResponse> {
         val response = try {
-            api.getRandomRecipes()
+            api.getRandomRecipes(tags = tags)
         } catch (e: Exception) {
             return Resource.Error("An unknown error occurred.")
         }

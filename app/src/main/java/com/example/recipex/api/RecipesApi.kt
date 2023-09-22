@@ -14,6 +14,8 @@ interface RecipesApi {
     suspend fun getRandomRecipes(
         @Query("number")
         number: Int = 20,
+        @Query("tags")
+        tags: String,
         @Query("apiKey")
         apiKey: String = API_KEY
     ): RecipesResponse

@@ -17,18 +17,23 @@ class HomeScreenViewModel @Inject constructor(
     private val repository: RecipesRepository
 ) : ViewModel() {
 
-    private val _randomRecipesList = mutableStateListOf<Recipe>()
+     val _randomRecipesList = mutableStateListOf<Recipe>()
     val randomRecipesList: List<Recipe> = _randomRecipesList
     val errorMessage = mutableStateOf("")
+    private var selectedTags = mutableStateListOf<String>()
 
     init {
         loadRandomRecipes()
     }
 
-    private fun loadRandomRecipes() {
+    fun loadRandomRecipes() {
         viewModelScope.launch {
-            when (val result = repository.getRandomRecipes()) {
+            val tagsList: List<String> = selectedTags
+            val tagsString: String = tagsList.joinToString(",")
+
+            when (val result = repository.getRandomRecipes(tagsString)) {
                 is Resource.Success -> {
+                    _randomRecipesList.clear()
                     _randomRecipesList.addAll(result.data!!.recipes)
                 }
                 is Resource.Error -> {
@@ -36,6 +41,18 @@ class HomeScreenViewModel @Inject constructor(
                 }
                 is Resource.Loading -> {}
             }
+        }
+    }
+
+    fun setTag(tag: String) {
+        if (!selectedTags.contains(tag)) {
+            selectedTags.add(tag)
+        }
+    }
+
+    fun removeTag(tag: String) {
+        if (selectedTags.contains(tag)) {
+            selectedTags.remove(tag)
         }
     }
 }
