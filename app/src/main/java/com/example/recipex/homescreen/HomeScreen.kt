@@ -144,16 +144,17 @@ fun AppTextAndDescription() {
 fun RecipesList(recipes: List<Recipe>, navController: NavController) {
     Column {
         Text(
+            modifier = Modifier.padding(horizontal = 10.dp),
             text = "Today's Recommended",
             style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White),
         )
         Spacer(modifier = Modifier.height(10.dp))
 
         LazyRow() {
-            items(recipes.size, key = {
-                recipes[it].id
+            items(recipes.size, key = { index ->
+                recipes[index].id
             }) { index ->
-                RecipeCard(recipe = recipes[index], navController)
+                RecipeCard(recipe = recipes[index], navController, index)
                 Spacer(modifier = Modifier.width(30.dp))
             }
         }
@@ -162,15 +163,20 @@ fun RecipesList(recipes: List<Recipe>, navController: NavController) {
 }
 
 @Composable
-fun RecipeCard(recipe: Recipe, navController: NavController) {
+fun RecipeCard(recipe: Recipe, navController: NavController, index: Int) {
+    val interactionSource = remember { MutableInteractionSource() }
     Column(
         modifier = Modifier
             .width(200.dp)
-            .clickable {
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+            ) {
                 navController.navigate(
                     "${Screen.RecipeDetails.route}/${recipe.id}"
                 )
-            },
+            }
+            .padding(start = if (index == 0) 10.dp else 0.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
