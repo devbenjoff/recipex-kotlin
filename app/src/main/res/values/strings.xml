@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Recipex</string>
+    <string name="rexipex">Rexipex</string>
+    <string name="home">Home</string>
+    <string name="search_recipes">Search Recipes</string>
+    <string name="recipe_details">Recipe Details</string>
+</resources>
